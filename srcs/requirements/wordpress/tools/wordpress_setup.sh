@@ -1,23 +1,22 @@
 #!/bin/bash
 
 get_secret() {
-    local env_var_name=$1
-    local secret_file_path=$2
+    local secret_file_path=$1
 
     if [ -f "$secret_file_path" ]; then
-        cat "$secret_file_path"
+        cat "$secret_file_path" | tr -d '\r\n'
     else
-        echo "${!env_var_name}"
+        return 1
     fi
 }
 
-DB_PASSWORD=$(get_secret "MYSQL_PASSWORD" "/run/secrets/db_password")
-WP_ADMIN_PASSWORD=$(get_secret "WP_ADMIN_PASSWORD" "/run/secrets/credentials")
+DB_PASSWORD=$(get_secret "/run/secrets/db_password")
+WP_ADMIN_PASSWORD=$(get_secret "/run/secrets/credentials")
+WP_PASSWORD=$(get_secret "/run/secrets/wp_author_password")
 
 mkdir -p /var/www/html
 
-# Wait for database container to be fully alive
-while ! mariadb-admin ping --protocol=tcp -h"mariadb" -u "$MYSQL_USER" --password="$DB_PASSWORD" --silent; do
+while ! mariadb-admin ping --protocol=tcp -h "mariadb" -u "$MYSQL_USER" --password="$DB_PASSWORD" --silent; do
     sleep 1
 done
 

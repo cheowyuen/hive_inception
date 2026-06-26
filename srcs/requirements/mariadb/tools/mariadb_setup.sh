@@ -1,18 +1,17 @@
 #!/bin/sh
 
 get_secret() {
-    local env_var_name=$1
-    local secret_file_path=$2
+    local secret_file_path=$1
     
     if [ -f "$secret_file_path" ]; then
-        cat "$secret_file_path"
+        cat "$secret_file_path" | tr -d '\r\n'
     else
-        echo "${!env_var_name}"
+        return 1
     fi
 }
 
-DB_PASSWORD=$(get_secret "MYSQL_PASSWORD" "/run/secrets/db_password")
-DB_ROOT_PASSWORD=$(get_secret "MYSQL_ROOT_PASSWORD" "/run/secrets/db_root_password")
+DB_PASSWORD=$(get_secret "/run/secrets/db_password")
+DB_ROOT_PASSWORD=$(get_secret "/run/secrets/db_root_password")
 
 if [ ! -d "/run/mysqld" ]; then
     mkdir -p /run/mysqld
