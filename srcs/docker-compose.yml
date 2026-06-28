@@ -4,7 +4,7 @@ services:
     build: ./requirements/nginx
     restart: always
     ports:
-      - "443:443"
+      - "8443:8443"
     networks:
       - inception_network
     volumes:
@@ -28,6 +28,7 @@ services:
     secrets:
       - credentials
       - db_password
+      - wp_author_password
     volumes:
       - wordpress_data:/var/www/html
     networks:
@@ -75,3 +76,5 @@ secrets:
     file: ../secrets/db_root_password.txt
   credentials:
     file: ../secrets/credentials.txt
+  wp_author_password:
+    file: ../secrets/wp_author_password.txt

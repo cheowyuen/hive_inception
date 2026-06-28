@@ -55,16 +55,6 @@ if [ ! -f "/var/www/html/wp-config.php" ]; then
             --path=/var/www/html \
             --allow-root
     fi
-
-    if ! wp user get "commentator" --path=/var/www/html --allow-root > /dev/null 2>&1; then
-        wp user create \
-            "commentator" \
-            "user@42.fr" \
-            --user_pass="userpassword123" \
-            --role=author \
-            --path=/var/www/html \
-            --allow-root
-    fi
 fi
 
 # Ensure PHP-FPM can listen to Nginx over the network
