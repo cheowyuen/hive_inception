@@ -4,7 +4,7 @@ services:
     build: ./requirements/nginx
     restart: always
     ports:
-      - "8443:8443"
+      - "443:443"
     networks:
       - inception_network
     volumes:
