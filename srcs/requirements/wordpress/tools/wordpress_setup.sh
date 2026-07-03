@@ -20,12 +20,15 @@ while ! mariadb-admin ping --protocol=tcp -h "mariadb" -u "$MYSQL_USER" --passwo
     sleep 1
 done
 
+if [ ! -e /etc/.php_configured ]; then
+    sed -i 's/listen = 127.0.0.1:9000/listen = 9000/g' /etc/php82/php-fpm.d/www.conf
+    touch /etc/.php_configured
+fi
+
 if [ ! -f "/var/www/html/wp-config.php" ]; then
 
-    # 1. Download to correct directory
     wp core download --path=/var/www/html --allow-root
 
-    # 2. Add --path flag so WP-CLI knows where to write config
     wp config create \
         --path=/var/www/html \
         --dbname="${MYSQL_DATABASE}" \
@@ -34,7 +37,6 @@ if [ ! -f "/var/www/html/wp-config.php" ]; then
         --dbhost="mariadb" \
         --allow-root
 
-    # 3. Force the site URL to use HTTPS explicitly
     wp core install \
         --path=/var/www/html \
         --url="https://${DOMAIN_NAME}" \
@@ -45,7 +47,6 @@ if [ ! -f "/var/www/html/wp-config.php" ]; then
         --skip-email \
         --allow-root
 
-    # 4. Check and create the author test user with path awareness
     if ! wp user get "${WP_USER}" --path=/var/www/html --allow-root > /dev/null 2>&1; then
         wp user create \
             "${WP_USER}" \
@@ -57,10 +58,6 @@ if [ ! -f "/var/www/html/wp-config.php" ]; then
     fi
 fi
 
-# Ensure PHP-FPM can listen to Nginx over the network
-sed -i 's/listen = 127.0.0.1:9000/listen = 9000/g' /etc/php82/php-fpm.d/www.conf
-
-# 5. Grant PHP-FPM (nginx user) full write access to save evaluator edits
 chown -R nginx:nginx /var/www/html
 
 exec php-fpm82 -F

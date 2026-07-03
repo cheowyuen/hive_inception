@@ -15,7 +15,4 @@ RUN mkdir -p /run/nginx
 
 EXPOSE 443
 
-#RUN mkdir -p /var/www/html
-#RUN echo "<h1>NGINX is working perfectly!</h1>" > /var/www/html/index.html
-
 CMD ["nginx", "-g", "daemon off;"]

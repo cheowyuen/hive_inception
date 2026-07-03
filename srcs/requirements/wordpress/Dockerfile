@@ -1,6 +1,6 @@
 FROM alpine:3.22
 
-RUN apk update && apk add --no-cache \
+RUN apk add --no-cache \
     php82 \
     php82-fpm \
     php82-mysqli \
