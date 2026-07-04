@@ -16,7 +16,7 @@ WP_PASSWORD=$(get_secret "/run/secrets/wp_author_password")
 
 mkdir -p /var/www/html
 
-while ! mariadb-admin ping --protocol=tcp -h "mariadb" -u "$MYSQL_USER" --password="$DB_PASSWORD" --silent; do
+while ! mariadb-admin ping --protocol=tcp -h "mariadb" -P 3306 -u "$MYSQL_USER" --password="$DB_PASSWORD" --silent; do
     sleep 1
 done
 
@@ -34,7 +34,7 @@ if [ ! -f "/var/www/html/wp-config.php" ]; then
         --dbname="${MYSQL_DATABASE}" \
         --dbuser="${MYSQL_USER}" \
         --dbpass="$DB_PASSWORD" \
-        --dbhost="mariadb" \
+        --dbhost="mariadb:3306" \
         --allow-root
 
     wp core install \
